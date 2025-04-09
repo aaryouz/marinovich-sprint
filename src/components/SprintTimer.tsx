@@ -1,11 +1,9 @@
-
 import React, { useState, useEffect, useRef } from 'react';
 import { 
   Brain, 
-  LightningBolt, 
-  Activity, 
-  Sparkles, 
   Zap,
+  Activity, 
+  Sparkles,
   Play,
   Square
 } from 'lucide-react';
@@ -32,7 +30,6 @@ const SprintTimer: React.FC = () => {
   const recoveryRef = useRef<number | null>(null);
   const { toast } = useToast();
 
-  // Format timer to MM:SS.S
   const formatTime = (time: number): string => {
     const minutes = Math.floor(time / 60000);
     const seconds = Math.floor((time % 60000) / 1000);
@@ -41,13 +38,12 @@ const SprintTimer: React.FC = () => {
     return `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}.${milliseconds}`;
   };
 
-  // Format recovery timer to SS
   const formatRecoveryTime = (time: number): string => {
     return `${time}s`;
   };
 
   const startTimer = () => {
-    if (isRecovering) return; // Don't start if in recovery
+    if (isRecovering) return;
 
     setIsRunning(true);
     setStatus('running');
@@ -70,7 +66,6 @@ const SprintTimer: React.FC = () => {
     }
 
     if (isRunning) {
-      // Save sprint data
       const newSprint = { number: sprintNumber, time: timer };
       setSprints([...sprints, newSprint]);
 
@@ -79,17 +74,14 @@ const SprintTimer: React.FC = () => {
         description: `Time: ${formatTime(timer)}`,
       });
 
-      // Start recovery
       setIsRecovering(true);
       setStatus('resting');
       setRecoveryTimer(RECOVERY_TIME);
       setIsRunning(false);
 
-      // Start recovery countdown
       recoveryRef.current = window.setInterval(() => {
         setRecoveryTimer(prev => {
           if (prev <= 1) {
-            // End recovery
             if (recoveryRef.current) {
               clearInterval(recoveryRef.current);
               recoveryRef.current = null;
@@ -129,11 +121,9 @@ const SprintTimer: React.FC = () => {
     setSprints([]);
   };
 
-  // Voice recognition setup
   useEffect(() => {
-    let recognition: SpeechRecognition | null = null;
+    let recognition: any = null;
 
-    // Check if browser supports speech recognition
     if ('SpeechRecognition' in window || 'webkitSpeechRecognition' in window) {
       const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
       recognition = new SpeechRecognition();
@@ -141,7 +131,7 @@ const SprintTimer: React.FC = () => {
       recognition.continuous = true;
       recognition.interimResults = true;
       
-      recognition.onresult = (event) => {
+      recognition.onresult = (event: any) => {
         for (let i = event.resultIndex; i < event.results.length; i++) {
           const transcript = event.results[i][0].transcript.trim().toLowerCase();
           
@@ -157,7 +147,7 @@ const SprintTimer: React.FC = () => {
         }
       };
       
-      recognition.onerror = (event) => {
+      recognition.onerror = (event: any) => {
         console.error('Speech recognition error:', event.error);
         toast({
           title: "Voice recognition error",
@@ -166,7 +156,6 @@ const SprintTimer: React.FC = () => {
         });
       };
       
-      // Start recognition
       try {
         recognition.start();
         console.log('Voice recognition started');
@@ -182,7 +171,6 @@ const SprintTimer: React.FC = () => {
       });
     }
     
-    // Cleanup
     return () => {
       if (recognition) {
         recognition.stop();
@@ -196,7 +184,6 @@ const SprintTimer: React.FC = () => {
     };
   }, [isRunning, isRecovering]);
 
-  // Define button text and function based on state
   const buttonConfig = {
     text: isRunning ? 'STOP' : 'START',
     action: isRunning ? stopTimer : startTimer,
@@ -204,7 +191,6 @@ const SprintTimer: React.FC = () => {
     disabled: isRecovering
   };
 
-  // Status text styling based on current status
   const getStatusClass = () => {
     switch(status) {
       case 'ready': return 'status-ready';
@@ -214,7 +200,6 @@ const SprintTimer: React.FC = () => {
     }
   };
 
-  // Status text based on current status
   const getStatusText = () => {
     switch(status) {
       case 'ready': return 'Ready';
@@ -227,7 +212,6 @@ const SprintTimer: React.FC = () => {
   return (
     <div className="flex flex-col items-center justify-center min-h-screen p-6">
       <div className="relative w-full max-w-lg bg-gradient-to-b from-marinovich-yellow to-marinovich-yellow/80 cartoon-border cartoon-shadow rounded-[2rem] p-6">
-        {/* Decorative Elements */}
         <Brain 
           className="absolute top-4 left-4 text-marinovich-pink" 
           size={40} 
@@ -245,11 +229,10 @@ const SprintTimer: React.FC = () => {
           </h1>
           <h1 className="text-marinovich-cream font-bold text-2xl md:text-3xl text-center rotate-1">
             SPRINT TEST
-            <LightningBolt className="inline-block ml-2 text-marinovich-yellow" size={24} />
+            <Zap className="inline-block ml-2 text-marinovich-yellow" size={24} />
           </h1>
         </div>
         
-        {/* Timer Display */}
         <div className="bg-marinovich-cream cartoon-border p-4 mb-4">
           <div className="bg-marinovich-yellow cartoon-border p-2 mb-4">
             <h2 className={`text-marinovich-pink font-bold text-5xl md:text-6xl time-display text-center ${isRunning ? 'animate-pulse' : ''}`}>
@@ -274,7 +257,6 @@ const SprintTimer: React.FC = () => {
           </div>
         </div>
         
-        {/* Control Button */}
         <button
           onClick={buttonConfig.action}
           disabled={buttonConfig.disabled}
@@ -287,13 +269,11 @@ const SprintTimer: React.FC = () => {
           }
         </button>
         
-        {/* Lightning bolt decorations */}
         <Zap className="absolute bottom-12 left-0 -translate-x-1/2 text-marinovich-yellow" size={30} />
         <Zap className="absolute bottom-24 right-0 translate-x-1/2 text-marinovich-yellow" size={30} />
         <Activity className="absolute bottom-36 left-0 -translate-x-1/3 text-marinovich-blue" size={30} />
       </div>
       
-      {/* Voice Command Hint */}
       <div className="mt-6 text-center">
         <p className="text-marinovich-brown text-sm">
           Voice commands: Say "start" to begin, "stop" to end a sprint
@@ -308,7 +288,6 @@ const SprintTimer: React.FC = () => {
         )}
       </div>
       
-      {/* Sprint History (Hidden by Default) */}
       {sprints.length > 0 && (
         <div className="mt-6 w-full max-w-lg">
           <details className="cartoon-border p-4 bg-marinovich-cream">
