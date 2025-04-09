@@ -5,7 +5,8 @@ import {
   Activity, 
   Sparkles,
   Play,
-  Square
+  Square,
+  Timer
 } from 'lucide-react';
 import { useToast } from '@/components/ui/use-toast';
 
@@ -33,9 +34,9 @@ const SprintTimer: React.FC = () => {
   const formatTime = (time: number): string => {
     const minutes = Math.floor(time / 60000);
     const seconds = Math.floor((time % 60000) / 1000);
-    const milliseconds = Math.floor((time % 1000) / 100);
+    const milliseconds = Math.floor((time % 1000) / 10);
     
-    return `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}.${milliseconds}`;
+    return `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}.${milliseconds.toString().padStart(2, '0')}`;
   };
 
   const formatRecoveryTime = (time: number): string => {
@@ -56,7 +57,7 @@ const SprintTimer: React.FC = () => {
 
     timerRef.current = window.setInterval(() => {
       setTimer(Date.now() - startTime);
-    }, 100);
+    }, 10);
   };
 
   const stopTimer = () => {
@@ -193,9 +194,9 @@ const SprintTimer: React.FC = () => {
 
   const getStatusClass = () => {
     switch(status) {
-      case 'ready': return 'status-ready';
-      case 'running': return 'status-running';
-      case 'resting': return 'status-resting';
+      case 'ready': return 'text-marinovich-blue';
+      case 'running': return 'text-marinovich-pink animate-pulse';
+      case 'resting': return 'text-marinovich-purple';
       default: return '';
     }
   };
@@ -254,6 +255,13 @@ const SprintTimer: React.FC = () => {
                 {getStatusText()}
               </p>
             </div>
+
+            <div className="h-full w-[2px] bg-marinovich-brown mx-2"></div>
+            
+            <div className="text-center">
+              <p className="text-marinovich-brown font-bold text-lg">COMPLETED</p>
+              <p className="text-marinovich-brown font-bold text-2xl">{sprints.length}</p>
+            </div>
           </div>
         </div>
         
@@ -272,6 +280,7 @@ const SprintTimer: React.FC = () => {
         <Zap className="absolute bottom-12 left-0 -translate-x-1/2 text-marinovich-yellow" size={30} />
         <Zap className="absolute bottom-24 right-0 translate-x-1/2 text-marinovich-yellow" size={30} />
         <Activity className="absolute bottom-36 left-0 -translate-x-1/3 text-marinovich-blue" size={30} />
+        <Timer className="absolute bottom-36 right-0 translate-x-1/3 text-marinovich-pink" size={30} />
       </div>
       
       <div className="mt-6 text-center">
