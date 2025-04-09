@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect, useRef } from 'react';
 import { 
   Brain, 
@@ -9,6 +10,7 @@ import {
   Timer
 } from 'lucide-react';
 import { useToast } from '@/components/ui/use-toast';
+import { Progress } from "@/components/ui/progress";
 
 interface SprintData {
   number: number;
@@ -240,6 +242,24 @@ const SprintTimer: React.FC = () => {
               {formatTime(timer)}
             </h2>
           </div>
+          
+          {isRecovering && (
+            <div className="mb-4">
+              <div className="flex justify-between mb-1">
+                <span className="text-marinovich-purple font-bold">Recovery</span>
+                <span className="text-marinovich-purple font-bold">{recoveryTimer}s</span>
+              </div>
+              <Progress 
+                value={(recoveryTimer / RECOVERY_TIME) * 100} 
+                className="h-2 bg-marinovich-cream"
+              >
+                <div 
+                  className="h-full bg-marinovich-purple" 
+                  style={{ width: `${(recoveryTimer / RECOVERY_TIME) * 100}%` }}
+                />
+              </Progress>
+            </div>
+          )}
           
           <div className="flex justify-between">
             <div className="text-center">
