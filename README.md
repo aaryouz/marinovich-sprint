@@ -7,6 +7,8 @@
 
 ## 🎯 Philosophy & Purpose
 
+![Screenshot 2025-04-14 233236](https://github.com/user-attachments/assets/ac62bc51-b41a-49a4-8eb3-94bcfa97a7fd)
+
 The Marinovich Sprint Timer is built on the training principles of renowned athletic trainer Marv Marinovich. This tool digitizes his proven sprint test protocol, which is designed to:
 
 - **Measure Anaerobic Capacity**: Track an athlete's ability to maintain maximum power output
