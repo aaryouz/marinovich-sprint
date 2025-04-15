@@ -1,86 +1,154 @@
-
 # Marinovich Sprint Timer
 
 ![Marinovich Sprint Timer](https://img.shields.io/badge/Sprint%20Timer-v1.0-blue)
+![React](https://img.shields.io/badge/React-18.3.1-61dafb)
+![TypeScript](https://img.shields.io/badge/TypeScript-5.5.3-3178c6)
+![Tailwind](https://img.shields.io/badge/Tailwind-3.4.11-38bdf8)
 
-A reactive web application for tracking high-intensity sprints with automated recovery periods, designed for athletes and coaches implementing the Marinovich training methodology.
+## 🎯 Philosophy & Purpose
+
+The Marinovich Sprint Timer is built on the training principles of renowned athletic trainer Marv Marinovich. This tool digitizes his proven sprint test protocol, which is designed to:
+
+- **Measure Anaerobic Capacity**: Track an athlete's ability to maintain maximum power output
+- **Assess Recovery Efficiency**: Monitor how well athletes recover between high-intensity efforts
+- **Track Performance Degradation**: Observe the decline in sprint performance over multiple efforts
+- **Build Mental Toughness**: Push athletes to their limits in a structured environment
+
+The test protocol is simple yet demanding:
+1. Perform a 100m sprint at maximum effort
+2. Rest for exactly 60 seconds
+3. Repeat until performance significantly degrades
+4. Analyze the results to assess fitness level
 
 ## 🚀 Features
 
-- **Interactive Sprint Timer**: Start and stop sprint timers with millisecond precision
-- **Automated Recovery Tracking**: 60-second recovery countdown between sprints
-- **Voice Control**: Hands-free operation with voice commands ("start", "stop")
-- **Sprint History**: Keeps track of all completed sprints in a session
-- **Responsive Design**: Works on desktop, tablet, and mobile devices
-- **Visual Feedback**: Clear status indicators and progress tracking
+- **Precision Sprint Timer**: Millisecond-accurate timing for performance tracking
+- **Automated Recovery**: 60-second countdown timer between sprints
+- **Voice Control**: Hands-free operation with voice commands
+- **Sprint History**: Session-based performance tracking
+- **Progressive Web App**: Works offline and can be installed on mobile devices
+- **Responsive Design**: Optimized for field use on any device
 
-## 📋 How It Works
+## 💻 Technical Stack
 
-1. **Start a Sprint**: Click the START button or say "start" to begin timing a sprint
-2. **End a Sprint**: Click the STOP button or say "stop" to end the current sprint
-3. **Recovery Period**: A 60-second recovery countdown begins automatically
-4. **Next Sprint**: After recovery, the timer resets and is ready for the next sprint
-5. **View History**: Expand the Sprint History section to review all completed sprints
+### Frontend
+- **Framework**: React 18.3.1 with TypeScript 5.5.3
+- **Build Tool**: Vite 5.4.1
+- **UI Components**: shadcn/ui (Radix UI primitives)
+- **Styling**: Tailwind CSS 3.4.11
+- **State Management**: React Hooks + Context
+- **Icons**: Lucide React
+- **Form Handling**: React Hook Form + Zod validation
 
-## 🎯 Use Cases
+### Development Tools
+- **Package Manager**: npm/bun
+- **Type Checking**: TypeScript
+- **Linting**: ESLint with TypeScript support
+- **Code Formatting**: Prettier
+- **Dev Server**: Vite with HMR
 
-- **Speed Training**: Time short bursts of maximum effort sprints
-- **HIIT Workouts**: Perfect for high-intensity interval training
-- **Sports Conditioning**: Implement structured sprint/recovery protocols
-- **Performance Tracking**: Monitor sprint times over multiple sessions
+### Key Dependencies
+```json
+{
+  "react": "^18.3.1",
+  "typescript": "^5.5.3",
+  "tailwindcss": "^3.4.11",
+  "@radix-ui/react-*": "^1.x",
+  "lucide-react": "^0.462.0"
+}
+```
 
-## 🧠 Voice Command Reference
+## 🏗️ Architecture
 
-- Say **"start"** to begin a sprint
-- Say **"stop"** or **"end"** to complete a sprint
+### Component Structure
+```
+src/
+├── components/
+│   ├── ui/          # shadcn/ui components
+│   └── SprintTimer/ # Main timer implementation
+├── hooks/           # Custom React hooks
+├── lib/            # Utility functions
+├── styles/         # Global styles
+└── pages/          # Route components
+```
 
-## 💻 Technical Implementation
+### Key Features Implementation
 
-Built with modern web technologies:
+#### Voice Recognition
+```typescript
+// Uses Web Speech API for hands-free control
+const recognition = new window.webkitSpeechRecognition();
+recognition.continuous = true;
+recognition.interimResults = true;
+```
 
-- **React**: Component-based UI architecture
-- **TypeScript**: Type-safe JavaScript for reliable code
-- **Tailwind CSS**: Utility-first styling for responsive design
-- **Web Speech API**: Browser-based voice recognition
-
-## 🔧 Browser Compatibility
-
-The voice recognition feature uses the Web Speech API which is supported in:
-- Chrome (desktop & Android)
-- Edge
-- Safari (partial support)
-- Firefox (may require enabling experimental features)
-
-For browsers without speech recognition support, the button interface works universally.
-
-## ⚡ The Marinovich Method
-
-This timer is inspired by training methodologies focused on:
-- Short, maximum-effort sprints
-- Structured recovery periods
-- Progressive performance tracking
-- Optimizing power output and recovery
+#### Timer Precision
+```typescript
+// High-precision timing using performance.now()
+const startTime = performance.now();
+const interval = setInterval(() => {
+  const elapsed = performance.now() - startTime;
+}, 10); // Updates every 10ms
+```
 
 ## 🚦 Getting Started
 
 ```bash
 # Clone the repository
-git clone [repository-url]
+git clone https://github.com/yourusername/marinovich-sprint.git
 
 # Install dependencies
 npm install
 
 # Start development server
 npm run dev
+
+# Build for production
+npm run build
 ```
 
-## 📈 Future Enhancements
+## 📱 Usage
 
-- User accounts for saving session history
-- Custom recovery time settings
-- Export/sharing of sprint data
-- Audio cues and countdown sounds
+1. **Starting a Sprint**
+   - Click START button or say "start"
+   - Timer begins with millisecond precision
+   - Visual feedback indicates sprint is active
 
----
+2. **Ending a Sprint**
+   - Click STOP button or say "stop"
+   - Sprint time is recorded
+   - Recovery period begins automatically
 
-Made with ❤️ using React + TypeScript
+3. **Recovery Period**
+   - 60-second countdown displays
+   - Progress bar shows time remaining
+   - Next sprint is blocked until recovery completes
+
+4. **Viewing Results**
+   - Expand Sprint History panel
+   - Review all sprint times
+   - Analyze performance degradation
+
+## 🔧 Browser Support
+
+- **Full Support**: Chrome, Edge, Opera
+- **Voice Recognition**: 
+  - Chrome (desktop & Android)
+  - Edge
+  - Safari (partial)
+  - Firefox (experimental)
+
+## 🛠️ Development
+
+### Running Tests
+```bash
+npm run test        # Run unit tests
+npm run test:e2e   # Run end-to-end tests
+npm run test:ci    # CI pipeline tests
+```
+
+### Code Style
+```bash
+npm run lint       # Check code style
+npm run format     # Format code
+```
