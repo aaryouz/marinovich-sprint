@@ -31,6 +31,7 @@ const SprintTimer: React.FC = () => {
   const [status, setStatus] = useState<TimerStatus>('ready');
   const timerRef = useRef<number | null>(null);
   const recoveryRef = useRef<number | null>(null);
+  const startTimeRef = useRef<number>(0);
   const { toast } = useToast();
 
   const formatTime = (time: number): string => {
@@ -50,21 +51,30 @@ const SprintTimer: React.FC = () => {
 
     setIsRunning(true);
     setStatus('running');
-    const startTime = Date.now() - timer;
+    startTimeRef.current = performance.now();
+    setTimer(0);
     
     toast({
       title: "Sprint started!",
       description: "Timer is running",
     });
 
-    timerRef.current = window.setInterval(() => {
-      setTimer(Date.now() - startTime);
-    }, 10);
+    if (timerRef.current) {
+      clearInterval(timerRef.current);
+    }
+
+    const updateTimer = () => {
+      const elapsed = performance.now() - startTimeRef.current;
+      setTimer(elapsed);
+      timerRef.current = requestAnimationFrame(updateTimer);
+    };
+
+    timerRef.current = requestAnimationFrame(updateTimer);
   };
 
   const stopTimer = () => {
     if (timerRef.current) {
-      clearInterval(timerRef.current);
+      cancelAnimationFrame(timerRef.current);
       timerRef.current = null;
     }
 
@@ -82,38 +92,44 @@ const SprintTimer: React.FC = () => {
       setRecoveryTimer(RECOVERY_TIME);
       setIsRunning(false);
 
-      recoveryRef.current = window.setInterval(() => {
-        setRecoveryTimer(prev => {
-          if (prev <= 1) {
-            if (recoveryRef.current) {
-              clearInterval(recoveryRef.current);
-              recoveryRef.current = null;
-            }
-            setIsRecovering(false);
-            setStatus('ready');
-            setSprintNumber(prevNumber => prevNumber + 1);
-            setTimer(0);
+      const recoveryStartTime = performance.now();
+      
+      const updateRecoveryTimer = () => {
+        const elapsed = (performance.now() - recoveryStartTime) / 1000; // Convert to seconds
+        const remaining = Math.ceil(RECOVERY_TIME - elapsed);
 
-            toast({
-              title: "Recovery complete!",
-              description: "Ready for next sprint",
-            });
-
-            return 0;
+        if (remaining <= 0) {
+          if (recoveryRef.current) {
+            cancelAnimationFrame(recoveryRef.current);
+            recoveryRef.current = null;
           }
-          return prev - 1;
-        });
-      }, 1000);
+          setIsRecovering(false);
+          setStatus('ready');
+          setSprintNumber(prevNumber => prevNumber + 1);
+          setTimer(0);
+          setRecoveryTimer(0);
+
+          toast({
+            title: "Recovery complete!",
+            description: "Ready for next sprint",
+          });
+        } else {
+          setRecoveryTimer(remaining);
+          recoveryRef.current = requestAnimationFrame(updateRecoveryTimer);
+        }
+      };
+
+      recoveryRef.current = requestAnimationFrame(updateRecoveryTimer);
     }
   };
 
   const resetTimer = () => {
     if (timerRef.current) {
-      clearInterval(timerRef.current);
+      cancelAnimationFrame(timerRef.current);
       timerRef.current = null;
     }
     if (recoveryRef.current) {
-      clearInterval(recoveryRef.current);
+      cancelAnimationFrame(recoveryRef.current);
       recoveryRef.current = null;
     }
     setTimer(0);
@@ -123,6 +139,18 @@ const SprintTimer: React.FC = () => {
     setSprintNumber(1);
     setSprints([]);
   };
+
+  useEffect(() => {
+    // Cleanup function for intervals
+    return () => {
+      if (timerRef.current) {
+        cancelAnimationFrame(timerRef.current);
+      }
+      if (recoveryRef.current) {
+        clearInterval(recoveryRef.current);
+      }
+    };
+  }, []);
 
   useEffect(() => {
     let recognition: any = null;
@@ -226,7 +254,7 @@ const SprintTimer: React.FC = () => {
           strokeWidth={2} 
         />
         
-        <div className="mb-4 bg-marinovich-purple cartoon-border rounded-3xl p-4">
+        <div className="bg-marinovich-purple cartoon-border rounded-3xl p-4 mb-4">
           <h1 className="text-marinovich-cream font-bold text-2xl md:text-3xl text-center -rotate-1">
             MARINOVICH
           </h1>
@@ -235,11 +263,13 @@ const SprintTimer: React.FC = () => {
             <Zap className="inline-block ml-2 text-marinovich-yellow" size={24} />
           </h1>
         </div>
-        
+
         <div className="bg-marinovich-cream cartoon-border p-4 mb-4">
           <div className="bg-marinovich-yellow cartoon-border p-2 mb-4">
             <h2 className={`text-marinovich-pink font-bold text-5xl md:text-6xl time-display text-center ${isRunning ? 'animate-pulse' : ''}`}>
-              {formatTime(timer)}
+              {isRunning ? formatTime(timer) : 
+               isRecovering ? formatRecoveryTime(recoveryTimer) : 
+               "00:00.00"}
             </h2>
           </div>
           
@@ -279,8 +309,12 @@ const SprintTimer: React.FC = () => {
             <div className="h-full w-[2px] bg-marinovich-brown mx-2"></div>
             
             <div className="text-center">
-              <p className="text-marinovich-brown font-bold text-lg">COMPLETED</p>
-              <p className="text-marinovich-brown font-bold text-2xl">{sprints.length}</p>
+              <p className="text-marinovich-brown font-bold text-lg">LAST TIME</p>
+              <p className="text-marinovich-brown font-bold text-2xl">
+                {sprints.length > 0 ? 
+                  `${(sprints[sprints.length - 1].time / 1000).toFixed(2)}s` : 
+                  '-'}
+              </p>
             </div>
           </div>
         </div>

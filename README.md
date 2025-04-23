@@ -1,9 +1,5 @@
 # Marinovich Sprint Timer
 
-![Marinovich Sprint Timer](https://img.shields.io/badge/Sprint%20Timer-v1.0-blue)
-![React](https://img.shields.io/badge/React-18.3.1-61dafb)
-![TypeScript](https://img.shields.io/badge/TypeScript-5.5.3-3178c6)
-![Tailwind](https://img.shields.io/badge/Tailwind-3.4.11-38bdf8)
 
 ## 🎯 Philosophy & Purpose
 
